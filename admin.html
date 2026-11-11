@@ -3,354 +3,1029 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NEON SPORT ADMIN</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEON SPORT - ADMIN</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#080b12;color:white;font-family:Arial,sans-serif;padding:18px}
-.box{max-width:850px;margin:25px auto;background:#111827;padding:20px;border-radius:15px}
-h2{color:#ffd700;text-align:center}
-input,button{width:100%;padding:12px;margin:7px 0;border-radius:8px;font-size:14px}
-input{background:#080b12;color:white;border:1px solid #444}
-button{background:#ffd700;border:0;font-weight:bold;cursor:pointer}
-.secondary{background:#273449;color:white}
-.match{padding:14px;margin:10px 0;background:#080b12;border:1px solid #333;border-radius:10px;cursor:pointer}
-.match:hover{border-color:#ffd700}
-.muted{color:#aaa;font-size:13px}
-#panel{display:none}
-#message{color:#ffd700;text-align:center;margin:12px}
-.selected{border-color:#ffd700}
+:root {
+  --bg:#080b12;
+  --card:#111827;
+  --card2:#1b2638;
+  --main:#ffd700;
+  --text:#fff;
+  --muted:#9ca3af;
+  --border:#ffffff18;
+  --green:#22c55e;
+  --red:#ef4444;
+}
+
+* {box-sizing:border-box;margin:0;padding:0}
+
+body {
+  background:var(--bg);
+  color:var(--text);
+  font-family:Cairo,sans-serif;
+  min-height:100vh;
+}
+
+button,input,textarea,select {font-family:inherit}
+
+button {cursor:pointer}
+
+.hidden {display:none!important}
+
+header {
+  padding:18px;
+  background:#0c111c;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo {
+  font-size:25px;
+  font-weight:900;
+  color:var(--main);
+}
+
+.logo span {color:white}
+
+.container {
+  width:min(1150px,95%);
+  margin:25px auto;
+}
+
+.panel {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:18px;
+  margin-bottom:18px;
+}
+
+.login {
+  max-width:420px;
+  margin:80px auto;
+}
+
+h2 {
+  color:var(--main);
+  font-size:19px;
+  margin-bottom:15px;
+}
+
+label {
+  display:block;
+  font-size:13px;
+  color:var(--muted);
+  margin:12px 0 6px;
+}
+
+input,textarea,select {
+  width:100%;
+  background:#080d17;
+  border:1px solid var(--border);
+  color:white;
+  padding:12px;
+  border-radius:9px;
+  outline:none;
+}
+
+textarea {
+  min-height:110px;
+  direction:ltr;
+  text-align:left;
+}
+
+input:focus,textarea:focus {
+  border-color:var(--main);
+}
+
+.btn {
+  border:0;
+  background:var(--main);
+  color:#080b12;
+  padding:10px 17px;
+  border-radius:9px;
+  font-weight:900;
+}
+
+.btn.secondary {
+  background:var(--card2);
+  color:white;
+  border:1px solid var(--border);
+}
+
+.btn.danger {
+  background:#501d29;
+  color:#fff;
+}
+
+.full {width:100%;margin-top:15px}
+
+.nav {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+
+.nav button {
+  background:var(--card);
+  color:white;
+  border:1px solid var(--border);
+  padding:10px 15px;
+  border-radius:9px;
+  font-weight:800;
+}
+
+.nav button.active {
+  color:var(--main);
+  border-color:var(--main);
+}
+
+.stats {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.stat {
+  background:var(--card);
+  padding:15px;
+  border-radius:12px;
+  border:1px solid var(--border);
+}
+
+.stat strong {
+  display:block;
+  color:var(--main);
+  font-size:25px;
+}
+
+.toolbar {
+  display:grid;
+  grid-template-columns:1fr 1fr auto;
+  gap:10px;
+  margin-bottom:15px;
+}
+
+.league {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  margin-bottom:15px;
+  overflow:hidden;
+}
+
+.league-title {
+  padding:12px;
+  background:#ffffff08;
+  color:var(--main);
+  font-weight:900;
+}
+
+.match {
+  display:grid;
+  grid-template-columns:1fr 85px 1fr auto;
+  gap:8px;
+  align-items:center;
+  padding:13px;
+  border-top:1px solid var(--border);
+}
+
+.team {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-size:12px;
+  font-weight:800;
+  min-width:0;
+}
+
+.team.away {
+  justify-content:flex-end;
+  text-align:left;
+}
+
+.team img {
+  width:27px;
+  height:27px;
+  object-fit:contain;
+}
+
+.center {text-align:center}
+
+.score {
+  font-size:18px;
+  font-weight:900;
+  direction:ltr;
+}
+
+.status {
+  color:var(--muted);
+  font-size:11px;
+}
+
+.live {color:#ff4055}
+
+.editor {
+  margin-top:20px;
+  border-top:1px solid var(--border);
+  padding-top:20px;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.ad-box {
+  background:#080d17;
+  padding:15px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  margin-bottom:15px;
+}
+
+.ad-box strong {color:var(--main)}
+
+.message {
+  background:#080d17;
+  color:var(--muted);
+  padding:15px;
+  border-radius:10px;
+  margin:12px 0;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+
+.checkbox {
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.checkbox input {width:auto}
+
+footer {
+  text-align:center;
+  color:var(--muted);
+  padding:25px;
+  font-size:12px;
+}
+
+@media(max-width:650px) {
+  .stats {grid-template-columns:1fr 1fr}
+  .toolbar {grid-template-columns:1fr}
+  .match {grid-template-columns:1fr 65px 1fr}
+  .match .edit {grid-column:1/-1;text-align:center}
+  .grid {grid-template-columns:1fr}
+  header {flex-wrap:wrap}
+}
 </style>
 </head>
+
 <body>
 
-<div class="box">
-<h2>NEON SPORT ADMIN</h2>
+<header>
+  <div>
+    <div class="logo">NEON <span>SPORT</span></div>
+    <small style="color:#9ca3af">ADMIN CONTROL PANEL</small>
+  </div>
+  <button id="logoutBtn" class="btn secondary hidden">تسجيل الخروج</button>
+</header>
 
-<div id="loginBox">
-<input id="email" type="email" placeholder="البريد الإلكتروني">
-<input id="password" type="password" placeholder="كلمة المرور">
-<button id="loginBtn">تسجيل الدخول</button>
-</div>
+<main class="container">
 
-<div id="panel">
-<p id="welcome" class="muted"></p>
+<!-- LOGIN -->
 
-<button class="secondary" id="logoutBtn">تسجيل الخروج</button>
+<section id="loginPage" class="panel login">
+  <h2>تسجيل دخول الأدمن</h2>
 
-<h3>مباريات اليوم</h3>
-<input type="date" id="matchDate">
-<input id="search" placeholder="ابحث عن فريق أو دوري">
+  <form id="loginForm">
+    <label>البريد الإلكتروني</label>
+    <input type="email" id="email" required>
 
-<button id="loadBtn">تحميل المباريات</button>
+    <label>كلمة المرور</label>
+    <input type="password" id="password" required>
 
-<div id="matches"></div>
+    <button class="btn full">تسجيل الدخول</button>
+  </form>
 
-<div id="editor" style="display:none">
-<hr>
-<h3>المباراة المختارة</h3>
-<div id="selectedInfo"></div>
+  <div id="loginMessage" class="message"></div>
+</section>
 
-<input id="streamUrl" type="url"
-placeholder="ضع رابط البث هنا">
+<!-- DASHBOARD -->
 
-<button id="saveBtn">حفظ رابط البث</button>
-<button class="secondary" id="deleteBtn">حذف رابط البث</button>
-</div>
-</div>
+<section id="dashboard" class="hidden">
 
-<div id="message"></div>
-</div>
+  <div class="stats">
+    <div class="stat">
+      <strong id="totalMatches">0</strong>
+      المباريات المحملة
+    </div>
+
+    <div class="stat">
+      <strong id="configuredMatches">0</strong>
+      إعدادات المباريات
+    </div>
+
+    <div class="stat">
+      <strong>5</strong>
+      أماكن الإعلانات
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="active" data-page="matchesPage">المباريات والبث</button>
+    <button data-page="adsPage">الإعلانات</button>
+  </div>
+
+  <!-- MATCHES -->
+
+  <section id="matchesPage" class="panel">
+    <h2>إدارة المباريات</h2>
+
+    <div class="toolbar">
+      <input type="date" id="matchDate">
+      <input type="search" id="search" placeholder="ابحث عن فريق...">
+      <button class="btn" id="loadBtn">تحميل المباريات</button>
+    </div>
+
+    <div id="matchesMessage" class="message">
+      اختر التاريخ وحمّل المباريات.
+    </div>
+
+    <div id="matchesList"></div>
+
+    <!-- MATCH EDITOR -->
+
+    <div id="matchEditor" class="editor hidden">
+
+      <h2>إعدادات المباراة</h2>
+
+      <div id="matchName" class="message"></div>
+
+      <label>رابط البث</label>
+      <input id="streamUrl" type="url" placeholder="https://example.com/player">
+
+      <label>رابط iframe</label>
+      <input id="iframeUrl" type="url" placeholder="https://example.com/embed">
+
+      <label class="checkbox">
+        <input type="checkbox" id="streamEnabled">
+        تفعيل البث
+      </label>
+
+      <label>ملاحظات</label>
+      <input id="streamNote" placeholder="ملاحظات داخلية">
+
+      <div class="toolbar" style="margin-top:15px">
+        <button class="btn" id="saveMatch">حفظ المباراة</button>
+        <button class="btn danger" id="deleteMatch">حذف الإعدادات</button>
+      </div>
+
+      <div id="editorMessage" class="message"></div>
+
+    </div>
+  </section>
+
+  <!-- ADS -->
+
+  <section id="adsPage" class="panel hidden">
+
+    <h2>إدارة إعلانات الموقع</h2>
+
+    <p style="color:#9ca3af;font-size:12px;margin-bottom:15px">
+      أضف كود الإعلان لكل مكان. استخدم أكواد الإعلانات من مصدر موثوق فقط.
+    </p>
+
+    <div id="adsContainer"></div>
+
+    <button class="btn full" id="saveAds">حفظ الإعلانات</button>
+
+    <div id="adsMessage" class="message"></div>
+
+  </section>
+
+</section>
+</main>
+
+<footer>NEON SPORT © 2026 | ADMIN PANEL</footer>
 
 <script type="module">
 
-import {initializeApp}
+import { initializeApp }
 from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
 
 import {
-getAuth,
-signInWithEmailAndPassword,
-onAuthStateChanged,
-signOut
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 
 import {
-getFirestore,
-doc,
-getDoc,
-setDoc,
-deleteDoc,
-serverTimestamp
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  deleteDoc,
+  collection,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 
-// إعدادات Firebase
 const firebaseConfig = {
-apiKey: "AIzaSyAb2Yaex3oRaZ11c4V9knZaPNzTZGkHGGo",
-authDomain: "neon-sport-admin-ceo-fn.firebaseapp.com",
-projectId: "neon-sport-admin-ceo-fn",
-storageBucket: "neon-sport-admin-ceo-fn.firebasestorage.app",
-messagingSenderId: "498381562171",
-appId: "1:498381562171:web:645616fcbb5cd73821571e"
+  apiKey: "AIzaSyAb2Yaex3oRaZ11c4V9knZaPNzTZGkHGGo",
+  authDomain: "neon-sport-admin-ceo-fn.firebaseapp.com",
+  projectId: "neon-sport-admin-ceo-fn",
+  storageBucket: "neon-sport-admin-ceo-fn.firebasestorage.app",
+  messagingSenderId: "498381562171",
+  appId: "1:498381562171:web:645616fcbb5cd73821571e",
+  measurementId: "G-Z8DWEGQMTC"
 };
-
-// ضع مفتاح API الجديد بعد تغييره
-const API_KEY = "261f19913c7c7e08add6f450c8c62b14";
-
-// ضع UID الخاص بحساب الأدمن
-const ADMIN_UID = "wZA1Il6T8UMDk6etgrWiz3nzG3h2";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const API_URL = "https://v1.basketball.api-sports.io/";
-const COLLECTION = "Streamurl";
+const API_URL = "https://v3.football.api-sports.io/fixtures";
+const TIMEZONE = "Africa/Cairo";
 
-let allMatches = [];
+/*
+  ضع بريد الأدمن المسموح به هنا.
+  يجب كذلك تقييد الوصول من خلال Firestore Rules.
+*/
+const ADMIN_EMAILS = [
+  "YOUR_ADMIN_EMAIL@example.com"
+];
+
+let fixtures = [];
 let selectedMatch = null;
+let apiKey = "";
 
 const $ = id => document.getElementById(id);
 
-function message(text){
-$("message").textContent = text;
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  })[c]);
 }
 
-function escapeHTML(value){
-return String(value ?? "").replace(/[&<>"']/g,c=>({
-"&":"&amp;","<":"&lt;",">":"&gt;",
-'"':"&quot;","'":"&#39;"
-})[c]);
+function validURL(value) {
+  try {
+    const url = new URL(value);
+    return ["https:","http:"].includes(url.protocol);
+  } catch {
+    return false;
+  }
 }
 
-// تسجيل الدخول
-$("loginBtn").onclick = async () => {
-try{
-message("جاري تسجيل الدخول...");
-
-await signInWithEmailAndPassword(
-auth,
-$("email").value.trim(),
-$("password").value
-);
-
-message("تم تسجيل الدخول");
-}catch(error){
-message("خطأ في تسجيل الدخول: "+error.message);
-}
-};
-
-// التحقق من الأدمن
-onAuthStateChanged(auth, user => {
-
-if(!user){
-$("loginBox").style.display="block";
-$("panel").style.display="none";
-return;
+function setMessage(id, text) {
+  $(id).textContent = text;
 }
 
-if(user.uid !== ADMIN_UID){
-message("هذا الحساب ليس لديه صلاحية الأدمن");
-signOut(auth);
-return;
-}
+/* AUTH */
 
-$("loginBox").style.display="none";
-$("panel").style.display="block";
-$("welcome").textContent="مرحباً بك في لوحة تحكم NEON SPORT";
+$("loginForm").addEventListener("submit", async event => {
+  event.preventDefault();
 
-loadMatches();
+  setMessage("loginMessage","جارٍ تسجيل الدخول...");
+
+  try {
+    await signInWithEmailAndPassword(
+      auth,
+      $("email").value.trim(),
+      $("password").value
+    );
+  } catch(error) {
+    setMessage("loginMessage",error.message);
+  }
 });
 
-// تسجيل الخروج
 $("logoutBtn").onclick = () => signOut(auth);
 
-// التاريخ
-function today(){
-const parts=new Intl.DateTimeFormat("en-CA",{
-timeZone:"Africa/Cairo",
-year:"numeric",month:"2-digit",day:"2-digit"
-}).formatToParts(new Date());
+onAuthStateChanged(auth, user => {
 
-const v={};
-parts.forEach(p=>v[p.type]=p.value);
-return `${v.year}-${v.month}-${v.day}`;
-}
+  if(user && ADMIN_EMAILS.includes(user.email.toLowerCase())) {
 
-$("matchDate").value=today();
+    $("loginPage").classList.add("hidden");
+    $("dashboard").classList.remove("hidden");
+    $("logoutBtn").classList.remove("hidden");
 
-// تحميل المباريات
-async function loadMatches(){
+    loadAds();
 
-if(!auth.currentUser || auth.currentUser.uid !== ADMIN_UID) return;
+    loadConfiguredCount();
 
-message("جاري تحميل المباريات...");
-$("matches").innerHTML="";
+  } else {
 
-try{
+    if(user) signOut(auth);
 
-const url=new URL(API_URL);
-url.searchParams.set("date",$("matchDate").value);
-url.searchParams.set("timezone","Africa/Cairo");
+    $("loginPage").classList.remove("hidden");
+    $("dashboard").classList.add("hidden");
+    $("logoutBtn").classList.add("hidden");
 
-const response=await fetch(url,{
-headers:{"x-apisports-key":API_KEY}
+    if(user) {
+      setMessage("loginMessage","هذا الحساب غير مصرح له بالدخول.");
+    }
+
+  }
+
 });
 
-if(!response.ok) throw new Error("API HTTP "+response.status);
+/* NAVIGATION */
 
-const data=await response.json();
+document.querySelectorAll(".nav button").forEach(button => {
 
-if(data.errors && Object.keys(data.errors).length){
-throw new Error(JSON.stringify(data.errors));
-}
+  button.onclick = () => {
 
-allMatches=data.response || [];
+    document.querySelectorAll(".nav button").forEach(b =>
+      b.classList.remove("active")
+    );
 
-renderMatches();
-message("تم تحميل "+allMatches.length+" مباراة");
+    button.classList.add("active");
 
-}catch(error){
-message("تعذر تحميل المباريات: "+error.message);
-}
-}
+    $("matchesPage").classList.toggle(
+      "hidden",
+      button.dataset.page !== "matchesPage"
+    );
 
-$("loadBtn").onclick=loadMatches;
+    $("adsPage").classList.toggle(
+      "hidden",
+      button.dataset.page !== "adsPage"
+    );
 
-// البحث
-$("search").oninput=renderMatches;
+  };
 
-function renderMatches(){
-
-const search=$("search").value.trim().toLowerCase();
-
-const filtered=allMatches.filter(m=>{
-const home=m.teams?.home?.name || "";
-const away=m.teams?.away?.name || "";
-const league=m.league?.name || "";
-
-return (home+" "+away+" "+league).toLowerCase().includes(search);
 });
 
-if(!filtered.length){
-$("matches").innerHTML="<p class='muted'>لا توجد مباريات مطابقة</p>";
-return;
-}
+/* API */
 
-$("matches").innerHTML=filtered.map(m=>{
+function today() {
 
-const id=Number(m.fixture?.id);
+  const parts = new Intl.DateTimeFormat("en-CA",{
+    timeZone:TIMEZONE,
+    year:"numeric",
+    month:"2-digit",
+    day:"2-digit"
+  }).formatToParts(new Date());
 
-return `
-<div class="match" onclick="selectGame(${id})">
-<strong>${escapeHTML(m.teams?.home?.name)}</strong>
-<span> × </span>
-<strong>${escapeHTML(m.teams?.away?.name)}</strong>
-<p class="muted">
-${escapeHTML(m.league?.name)}
--
-${escapeHTML(m.league?.country)}
-</p>
-<p class="muted">${escapeHTML(m.fixture?.date)}</p>
-</div>
-`;
+  const values = {};
+  parts.forEach(p => values[p.type] = p.value);
 
-}).join("");
+  return `${values.year}-${values.month}-${values.day}`;
 
 }
 
-// اختيار مباراة
-window.selectGame=async id=>{
+$("matchDate").value = today();
 
-selectedMatch=allMatches.find(m=>Number(m.fixture?.id)===id);
+$("loadBtn").onclick = loadMatches;
 
-if(!selectedMatch) return;
+$("search").oninput = renderMatches;
 
-const home=selectedMatch.teams?.home?.name || "";
-const away=selectedMatch.teams?.away?.name || "";
+async function loadMatches() {
 
-$("selectedInfo").innerHTML=`
-<p>${escapeHTML(home)} × ${escapeHTML(away)}</p>
-<p class="muted">${escapeHTML(selectedMatch.league?.name)}</p>
-<p class="muted">رقم المباراة: ${id}</p>
-`;
+  const date = $("matchDate").value;
 
-$("streamUrl").value="";
-$("editor").style.display="block";
+  if(!apiKey) {
+    apiKey = prompt("أدخل API KEY الخاص بك:");
+  }
 
-try{
+  if(!apiKey) return;
 
-const ref=doc(db,COLLECTION,String(id));
-const saved=await getDoc(ref);
+  setMessage("matchesMessage","جاري تحميل المباريات...");
 
-if(saved.exists()){
-$("streamUrl").value=saved.data().streamUrl || "";
-message("تم العثور على رابط محفوظ للمباراة");
-}else{
-message("مباراة جديدة، أضف رابط البث");
+  try {
+
+    const url = new URL(API_URL);
+
+    url.searchParams.set("date",date);
+    url.searchParams.set("timezone",TIMEZONE);
+
+    const response = await fetch(url,{
+      headers:{
+        "x-apisports-key":apiKey
+      }
+    });
+
+    if(!response.ok) {
+      throw new Error("HTTP "+response.status);
+    }
+
+    const data = await response.json();
+
+    if(data.errors && Object.keys(data.errors).length) {
+      throw new Error(JSON.stringify(data.errors));
+    }
+
+    fixtures = data.response || [];
+
+    $("totalMatches").textContent = fixtures.length;
+
+    renderMatches();
+
+    setMessage(
+      "matchesMessage",
+      `تم تحميل ${fixtures.length} مباراة.`
+    );
+
+  } catch(error) {
+
+    setMessage(
+      "matchesMessage",
+      "حدث خطأ أثناء تحميل المباريات: "+error.message
+    );
+
+  }
+
 }
 
-}catch(error){
-message("خطأ في قراءة Firestore: "+error.message);
+/* MATCH LIST */
+
+function renderMatches() {
+
+  const search = $("search").value.trim().toLowerCase();
+
+  const filtered = fixtures.filter(match => {
+
+    const home = match.teams?.home?.name || "";
+    const away = match.teams?.away?.name || "";
+
+    return (home+" "+away).toLowerCase().includes(search);
+
+  });
+
+  if(!filtered.length) {
+    $("matchesList").innerHTML =
+      '<div class="message">لا توجد مباريات.</div>';
+    return;
+  }
+
+  const groups = {};
+
+  filtered.forEach(match => {
+
+    const league = match.league || {};
+    const key = league.id || league.name || "other";
+
+    if(!groups[key]) {
+      groups[key] = {
+        league,
+        matches:[]
+      };
+    }
+
+    groups[key].matches.push(match);
+
+  });
+
+  $("matchesList").innerHTML =
+    Object.values(groups).map(group => {
+
+      const games = group.matches.map(match => {
+
+        const home = match.teams?.home || {};
+        const away = match.teams?.away || {};
+        const fixture = match.fixture || {};
+        const goals = match.goals || {};
+        const status = fixture.status?.short || "NS";
+
+        const started = !["NS","TBD"].includes(status);
+
+        return `
+          <div class="match">
+
+            <div class="team">
+              <img src="${escapeHTML(home.logo)}"
+                onerror="this.style.display='none'">
+              ${escapeHTML(home.name)}
+            </div>
+
+            <div class="center">
+              <div class="score">
+                ${started
+                  ? `${goals.home ?? 0} - ${goals.away ?? 0}`
+                  : "VS"}
+              </div>
+
+              <div class="status">
+                ${escapeHTML(status)}
+              </div>
+            </div>
+
+            <div class="team away">
+              ${escapeHTML(away.name)}
+              <img src="${escapeHTML(away.logo)}"
+                onerror="this.style.display='none'">
+            </div>
+
+            <div class="edit">
+              <button class="btn secondary"
+                data-id="${Number(fixture.id)}">
+                تعديل
+              </button>
+            </div>
+
+          </div>
+        `;
+
+      }).join("");
+
+      return `
+        <div class="league">
+
+          <div class="league-title">
+            ${escapeHTML(group.league.name)}
+            - ${escapeHTML(group.league.country)}
+          </div>
+
+          ${games}
+
+        </div>
+      `;
+
+    }).join("");
+
+  $("matchesList").querySelectorAll("[data-id]").forEach(button => {
+
+    button.onclick = () =>
+      openMatch(Number(button.dataset.id));
+
+  });
+
 }
+
+/* MATCH SETTINGS */
+
+async function openMatch(id) {
+
+  selectedMatch = fixtures.find(
+    match => Number(match.fixture?.id) === id
+  );
+
+  if(!selectedMatch) return;
+
+  $("matchEditor").classList.remove("hidden");
+
+  const home = selectedMatch.teams?.home?.name;
+  const away = selectedMatch.teams?.away?.name;
+
+  $("matchName").textContent =
+    `${home} × ${away} | ID: ${id}`;
+
+  $("streamUrl").value = "";
+  $("iframeUrl").value = "";
+  $("streamNote").value = "";
+  $("streamEnabled").checked = false;
+
+  setMessage("editorMessage","جاري تحميل الإعدادات...");
+
+  try {
+
+    const ref = doc(db,"matchSettings",String(id));
+    const snap = await getDoc(ref);
+
+    if(snap.exists()) {
+
+      const data = snap.data();
+
+      $("streamUrl").value = data.streamUrl || "";
+      $("iframeUrl").value = data.embedUrl || "";
+      $("streamNote").value = data.note || "";
+      $("streamEnabled").checked = !!data.enabled;
+
+    }
+
+    setMessage("editorMessage","تم تحميل الإعدادات.");
+
+  } catch(error) {
+
+    setMessage("editorMessage",error.message);
+
+  }
+
+  $("matchEditor").scrollIntoView({
+    behavior:"smooth"
+  });
+
+}
+
+$("saveMatch").onclick = async () => {
+
+  if(!selectedMatch) return;
+
+  const streamUrl = $("streamUrl").value.trim();
+  const iframeUrl = $("iframeUrl").value.trim();
+
+  if(streamUrl && !validURL(streamUrl)) {
+    return alert("رابط البث غير صحيح.");
+  }
+
+  if(iframeUrl && !validURL(iframeUrl)) {
+    return alert("رابط iframe غير صحيح.");
+  }
+
+  const id = String(selectedMatch.fixture.id);
+
+  const data = {
+
+    fixtureId:Number(id),
+
+    homeName:selectedMatch.teams.home.name,
+    awayName:selectedMatch.teams.away.name,
+
+    leagueName:selectedMatch.league.name || "",
+
+    streamUrl,
+    embedUrl:iframeUrl,
+
+    enabled:$("streamEnabled").checked,
+
+    note:$("streamNote").value.trim(),
+
+    updatedAt:new Date().toISOString()
+
+  };
+
+  try {
+
+    await setDoc(
+      doc(db,"matchSettings",id),
+      data,
+      {merge:true}
+    );
+
+    setMessage("editorMessage","تم حفظ المباراة بنجاح.");
+
+    loadConfiguredCount();
+
+  } catch(error) {
+
+    setMessage("editorMessage",error.message);
+
+  }
 
 };
 
-// حفظ رابط البث
-$("saveBtn").onclick=async()=>{
+$("deleteMatch").onclick = async () => {
 
-if(!selectedMatch) return;
+  if(!selectedMatch) return;
 
-const url=$("streamUrl").value.trim();
+  if(!confirm("هل تريد حذف إعدادات البث؟")) return;
 
-if(!url){
-message("اكتب رابط البث أولاً");
-return;
-}
+  try {
 
-try{
+    await deleteDoc(
+      doc(db,"matchSettings",String(selectedMatch.fixture.id))
+    );
 
-const id=String(selectedMatch.fixture.id);
+    $("streamUrl").value = "";
+    $("iframeUrl").value = "";
+    $("streamEnabled").checked = false;
+    $("streamNote").value = "";
 
-await setDoc(doc(db,COLLECTION,id),{
-fixtureId:Number(id),
-home:selectedMatch.teams?.home?.name || "",
-away:selectedMatch.teams?.away?.name || "",
-league:selectedMatch.league?.name || "",
-country:selectedMatch.league?.country || "",
-date:selectedMatch.fixture?.date || "",
-streamUrl:url,
-updatedAt:serverTimestamp()
-},{merge:true});
+    setMessage("editorMessage","تم حذف الإعدادات.");
 
-message("تم حفظ رابط البث بنجاح");
+    loadConfiguredCount();
 
-}catch(error){
-message("تعذر الحفظ: "+error.message);
-}
+  } catch(error) {
+
+    setMessage("editorMessage",error.message);
+
+  }
 
 };
 
-// حذف رابط البث
-$("deleteBtn").onclick=async()=>{
+async function loadConfiguredCount() {
 
-if(!selectedMatch) return;
+  try {
 
-if(!confirm("هل تريد حذف رابط البث؟")) return;
+    const snap = await getDocs(collection(db,"matchSettings"));
 
-try{
+    $("configuredMatches").textContent = snap.size;
 
-await deleteDoc(doc(
-db,
-COLLECTION,
-String(selectedMatch.fixture.id)
-));
+  } catch(error) {
 
-$("streamUrl").value="";
-message("تم حذف رابط البث");
+    console.error(error);
 
-}catch(error){
-message("تعذر الحذف: "+error.message);
+  }
+
 }
+
+/* ADS */
+
+const adSlots = [
+
+  ["socialBar","Social Bar"],
+
+  ["homeTopAd","Home Top Banner"],
+
+  ["homeBottomAd","Home Bottom Banner"],
+
+  ["detailsTopAd","Details Top Banner"],
+
+  ["detailsBottomAd","Details Bottom Banner"]
+
+];
+
+function renderAds() {
+
+  $("adsContainer").innerHTML = adSlots.map(([id,name]) => `
+
+    <div class="ad-box">
+
+      <strong>${name}</strong>
+
+      <label class="checkbox">
+        <input type="checkbox" id="enabled_${id}">
+        تفعيل الإعلان
+      </label>
+
+      <label>كود الإعلان</label>
+
+      <textarea id="code_${id}"
+        placeholder="ضع كود الإعلان هنا"></textarea>
+
+    </div>
+
+  `).join("");
+
+}
+
+async function loadAds() {
+
+  renderAds();
+
+  try {
+
+    const snap = await getDoc(
+      doc(db,"siteSettings","ads")
+    );
+
+    if(snap.exists()) {
+
+      const data = snap.data();
+
+      adSlots.forEach(([id]) => {
+
+        const ad = data[id] || {};
+
+        $("enabled_"+id).checked = !!ad.enabled;
+        $("code_"+id).value = ad.code || "";
+
+      });
+
+    }
+
+  } catch(error) {
+
+    setMessage("adsMessage",error.message);
+
+  }
+
+}
+
+$("saveAds").onclick = async () => {
+
+  const ads = {};
+
+  adSlots.forEach(([id]) => {
+
+    ads[id] = {
+
+      enabled:$("enabled_"+id).checked,
+
+      code:$("code_"+id).value,
+
+      updatedAt:new Date().toISOString()
+
+    };
+
+  });
+
+  try {
+
+    await setDoc(
+      doc(db,"siteSettings","ads"),
+      ads
+    );
+
+    setMessage("adsMessage","تم حفظ جميع الإعلانات بنجاح.");
+
+  } catch(error) {
+
+    setMessage("adsMessage",error.message);
+
+  }
 
 };
 
