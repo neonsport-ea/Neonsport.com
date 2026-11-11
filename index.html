@@ -1,0 +1,1067 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEON SPORT</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --main:#ffd700;
+  --glow:rgba(255,215,0,.35);
+  --bg:#080b12;
+  --card:#111827;
+  --text:#fff;
+  --muted:#9ca3af;
+}
+
+* {
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body {
+  background:var(--bg);
+  color:var(--text);
+  font-family:Cairo,sans-serif;
+  min-height:100vh;
+}
+
+body.yesterday {
+  --main:#00aaff;
+  --glow:rgba(0,170,255,.35);
+}
+
+body.today {
+  --main:#ffd700;
+  --glow:rgba(255,215,0,.35);
+}
+
+body.tomorrow {
+  --main:#ff304f;
+  --glow:rgba(255,48,79,.35);
+}
+
+header {
+  text-align:center;
+  padding:25px 15px;
+  border-bottom:1px solid #ffffff15;
+}
+
+.logo {
+  font-size:36px;
+  font-weight:900;
+  color:var(--main);
+  text-shadow:0 0 12px var(--glow);
+}
+
+.logo span {
+  color:white;
+}
+
+.subtitle {
+  color:var(--muted);
+  font-size:13px;
+}
+
+.container {
+  width:min(950px,94%);
+  margin:25px auto;
+}
+
+.tabs {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.tab {
+  padding:12px 5px;
+  border:1px solid #ffffff20;
+  border-radius:12px;
+  background:var(--card);
+  color:white;
+  font-family:inherit;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.tab.active {
+  color:var(--main);
+  border-color:var(--main);
+  box-shadow:0 0 15px var(--glow);
+}
+
+.toolbar {
+  display:flex;
+  gap:10px;
+  margin-bottom:20px;
+}
+
+input {
+  flex:1;
+  min-width:0;
+  padding:12px 15px;
+  border-radius:10px;
+  border:1px solid #ffffff20;
+  background:var(--card);
+  color:white;
+  font-family:inherit;
+  outline:none;
+}
+
+input:focus {
+  border-color:var(--main);
+}
+
+button {
+  font-family:inherit;
+}
+
+.refresh {
+  padding:10px 18px;
+  border:none;
+  border-radius:10px;
+  background:var(--main);
+  color:#080b12;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.date-title {
+  text-align:center;
+  color:var(--main);
+  margin-bottom:20px;
+  font-size:15px;
+}
+
+.message {
+  text-align:center;
+  padding:35px 15px;
+  color:var(--muted);
+  background:var(--card);
+  border-radius:14px;
+  border:1px solid #ffffff10;
+}
+
+.league {
+  margin-bottom:20px;
+  background:var(--card);
+  border:1px solid #ffffff12;
+  border-radius:14px;
+  overflow:hidden;
+}
+
+.league-header {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 15px;
+  background:#ffffff08;
+  border-bottom:1px solid #ffffff12;
+  font-weight:800;
+  color:var(--main);
+}
+
+.league-header img {
+  width:25px;
+  height:25px;
+  object-fit:contain;
+}
+
+.match {
+  display:grid;
+  grid-template-columns:1fr 95px 1fr;
+  align-items:center;
+  gap:8px;
+  padding:17px 12px;
+  border-bottom:1px solid #ffffff0c;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.match:hover {
+  background:#ffffff0b;
+}
+
+.team {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+  font-size:13px;
+  font-weight:700;
+}
+
+.team.home {
+  justify-content:flex-start;
+}
+
+.team.away {
+  justify-content:flex-end;
+  text-align:left;
+}
+
+.team img {
+  width:30px;
+  height:30px;
+  object-fit:contain;
+  flex-shrink:0;
+}
+
+.team-name {
+  overflow-wrap:anywhere;
+}
+
+.center {
+  text-align:center;
+}
+
+.score {
+  font-size:21px;
+  font-weight:900;
+  direction:ltr;
+}
+
+.time {
+  font-size:13px;
+  color:var(--main);
+  font-weight:800;
+}
+
+.live {
+  color:#ff435b;
+  animation:pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+  50% {opacity:.45}
+}
+
+/* صفحة تفاصيل المباراة */
+
+#detailsPage {
+  display:none;
+}
+
+.back {
+  display:inline-block;
+  padding:10px 18px;
+  border:1px solid var(--main);
+  border-radius:10px;
+  color:var(--main);
+  text-decoration:none;
+  font-weight:800;
+  margin-bottom:18px;
+  cursor:pointer;
+  background:transparent;
+}
+
+.details-card {
+  background:var(--card);
+  border:1px solid #ffffff15;
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:18px;
+}
+
+.league-info {
+  text-align:center;
+  color:var(--main);
+  font-weight:800;
+  margin-bottom:25px;
+}
+
+.teams-details {
+  display:grid;
+  grid-template-columns:1fr 100px 1fr;
+  align-items:center;
+  text-align:center;
+  gap:8px;
+}
+
+.team-details img {
+  width:75px;
+  height:75px;
+  object-fit:contain;
+}
+
+.team-details h3 {
+  font-size:14px;
+  margin-top:10px;
+}
+
+.details-score {
+  font-size:35px;
+  font-weight:900;
+  direction:ltr;
+}
+
+.details-status {
+  color:var(--main);
+  font-size:13px;
+  font-weight:800;
+  margin-top:8px;
+}
+
+.details-date {
+  text-align:center;
+  color:var(--muted);
+  margin-top:20px;
+  font-size:13px;
+}
+
+.section-title {
+  color:var(--main);
+  font-weight:900;
+  margin-bottom:15px;
+  font-size:17px;
+}
+
+.info-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.info-item {
+  background:#ffffff08;
+  padding:13px;
+  border-radius:10px;
+  font-size:13px;
+  overflow-wrap:anywhere;
+}
+
+.info-item span {
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  margin-bottom:4px;
+}
+
+footer {
+  text-align:center;
+  padding:25px;
+  color:#687080;
+  font-size:12px;
+}
+
+@media(max-width:480px) {
+  .logo {font-size:30px}
+  .match {
+    grid-template-columns:1fr 70px 1fr;
+    gap:4px;
+  }
+  .team {font-size:11px;gap:4px}
+  .team img {width:24px;height:24px}
+  .score {font-size:18px}
+  .toolbar {flex-direction:column}
+  .refresh {width:100%}
+  .teams-details {
+    grid-template-columns:1fr 75px 1fr;
+  }
+  .team-details img {
+    width:55px;
+    height:55px;
+  }
+  .team-details h3 {font-size:12px}
+  .details-score {font-size:25px}
+  .info-grid {grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body class="today">
+
+<header>
+  <div class="logo">NEON <span>SPORT</span></div>
+  <div class="subtitle">كل مباريات كرة القدم في مكان واحد</div>
+</header>
+
+<main class="container">
+
+  <!-- الصفحة الرئيسية -->
+  <section id="homePage">
+
+    <div class="tabs">
+      <button class="tab" data-day="yesterday" onclick="selectDay('yesterday')">
+        أمس 🔵
+      </button>
+
+      <button class="tab active" data-day="today" onclick="selectDay('today')">
+        اليوم 🟡
+      </button>
+
+      <button class="tab" data-day="tomorrow" onclick="selectDay('tomorrow')">
+        بكرة 🔴
+      </button>
+    </div>
+
+    <div class="toolbar">
+      <input id="search" type="search"
+        placeholder="ابحث عن فريق..."
+        oninput="renderMatches()">
+
+      <button class="refresh" onclick="loadMatches(true)">
+        ↻ تحديث
+      </button>
+    </div>
+
+    <div class="date-title" id="dateTitle"></div>
+
+    <div id="matches">
+      <div class="message">جاري تحميل المباريات...</div>
+    </div>
+
+  </section>
+
+  <!-- صفحة تفاصيل المباراة -->
+  <section id="detailsPage">
+
+    <button class="back" onclick="goBack()">
+      → العودة للمباريات
+    </button>
+
+    <div id="matchDetails">
+      <div class="message">جاري تحميل تفاصيل المباراة...</div>
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  NEON SPORT © 2026 | Powered by API-FOOTBALL
+</footer>
+
+<script>
+
+// ===============================
+// إعدادات API
+// ===============================
+
+const API_URL = "https://v3.football.api-sports.io/fixtures";
+
+// ضع مفتاح API الخاص بك
+const API_KEY = "261f19913c7c7e08add6f450c8c62b14";
+
+const TIMEZONE = "Africa/Cairo";
+
+let currentDay = "today";
+let matchesCache = {};
+let requestNumber = 0;
+let detailsRequestNumber = 0;
+let selectedMatch = null;
+let refreshTimer = null;
+
+
+// ===============================
+// التاريخ والتوقيت
+// ===============================
+
+function cairoDate(offset = 0) {
+
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: TIMEZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(new Date());
+
+  const values = {};
+
+  parts.forEach(p => values[p.type] = p.value);
+
+  return new Date(Date.UTC(
+    Number(values.year),
+    Number(values.month) - 1,
+    Number(values.day) + offset
+  )).toISOString().slice(0, 10);
+}
+
+
+function formatDate(date) {
+
+  return new Intl.DateTimeFormat("ar-EG", {
+    timeZone: TIMEZONE,
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  }).format(new Date(date + "T12:00:00Z"));
+
+}
+
+
+function formatTime(date) {
+
+  return new Intl.DateTimeFormat("ar-EG", {
+    timeZone: TIMEZONE,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
+  }).format(new Date(date));
+
+}
+
+
+function getSelectedDate() {
+
+  if (currentDay === "yesterday") return cairoDate(-1);
+
+  if (currentDay === "tomorrow") return cairoDate(1);
+
+  return cairoDate(0);
+
+}
+
+
+// ===============================
+// أدوات مساعدة
+// ===============================
+
+function escapeHTML(value) {
+
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+
+}
+
+
+function statusLabel(status) {
+
+  const labels = {
+    TBD:"لم يحدد الموعد",
+    NS:"لم تبدأ",
+    "1H":"الشوط الأول",
+    HT:"استراحة",
+    "2H":"الشوط الثاني",
+    ET:"وقت إضافي",
+    BT:"استراحة إضافية",
+    P:"ركلات ترجيح",
+    FT:"انتهت",
+    AET:"انتهت بعد وقت إضافي",
+    PEN:"انتهت بركلات الترجيح",
+    PST:"تأجلت",
+    CANC:"ألغيت",
+    ABD:"توقفت",
+    AWD:"فوز اعتباري",
+    WO:"انسحاب",
+    LIVE:"مباشر"
+  };
+
+  return labels[status] || status || "غير معروف";
+
+}
+
+
+function isLive(status) {
+
+  return ["1H","HT","2H","ET","BT","P","LIVE"].includes(status);
+
+}
+
+
+// ===============================
+// تغيير اليوم
+// ===============================
+
+function selectDay(day) {
+
+  currentDay = day;
+
+  document.body.className = day;
+
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.classList.toggle("active", tab.dataset.day === day);
+  });
+
+  loadMatches();
+
+}
+
+
+// ===============================
+// تحميل المباريات
+// ===============================
+
+async function loadMatches(force = false) {
+
+  const date = getSelectedDate();
+
+  const thisRequest = ++requestNumber;
+
+  document.getElementById("dateTitle").textContent =
+    formatDate(date);
+
+  if (!force && matchesCache[date]) {
+    renderMatches();
+    return;
+  }
+
+  document.getElementById("matches").innerHTML =
+    '<div class="message">جاري تحميل المباريات...</div>';
+
+  try {
+
+    const url = new URL(API_URL);
+
+    url.searchParams.set("date", date);
+    url.searchParams.set("timezone", TIMEZONE);
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "x-apisports-key": API_KEY
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("HTTP " + response.status);
+    }
+
+    const data = await response.json();
+
+    if (data.errors && Object.keys(data.errors).length) {
+      throw new Error(JSON.stringify(data.errors));
+    }
+
+    if (!Array.isArray(data.response)) {
+      throw new Error("استجابة API غير متوقعة");
+    }
+
+    if (thisRequest !== requestNumber) return;
+
+    matchesCache[date] = data.response;
+
+    renderMatches();
+
+  } catch (error) {
+
+    if (thisRequest !== requestNumber) return;
+
+    console.error(error);
+
+    document.getElementById("matches").innerHTML = `
+      <div class="message">
+        <strong>تعذر تحميل المباريات</strong>
+        <p style="margin-top:10px;font-size:13px">
+          ${escapeHTML(error.message)}
+        </p>
+        <p style="margin-top:8px;font-size:12px">
+          تأكد من صلاحية المفتاح والاتصال بالإنترنت.
+        </p>
+      </div>
+    `;
+
+  }
+
+}
+
+
+// ===============================
+// عرض المباريات
+// ===============================
+
+function renderMatches() {
+
+  const date = getSelectedDate();
+
+  const allMatches = matchesCache[date] || [];
+
+  const search = document.getElementById("search")
+    .value.trim().toLowerCase();
+
+  const matches = allMatches.filter(item => {
+
+    const home = item.teams?.home?.name || "";
+    const away = item.teams?.away?.name || "";
+
+    return (home + " " + away).toLowerCase().includes(search);
+
+  });
+
+  const container = document.getElementById("matches");
+
+  if (!matches.length) {
+
+    container.innerHTML = `
+      <div class="message">
+        ${allMatches.length
+          ? "لا توجد نتائج مطابقة للبحث."
+          : "لا توجد مباريات مسجلة لهذا اليوم."}
+      </div>
+    `;
+
+    return;
+  }
+
+  const leagues = {};
+
+  matches.forEach(match => {
+
+    const league = match.league || {};
+
+    const key = league.id || league.name || "other";
+
+    if (!leagues[key]) {
+      leagues[key] = {
+        info: league,
+        matches: []
+      };
+    }
+
+    leagues[key].matches.push(match);
+
+  });
+
+  container.innerHTML = Object.values(leagues).map(group => {
+
+    const league = group.info;
+
+    const leagueHeader = `
+      <div class="league-header">
+        ${league.logo
+          ? `<img src="${escapeHTML(league.logo)}" alt="">`
+          : ""}
+        <span>${escapeHTML(league.name || "بطولة غير محددة")}</span>
+        <span style="margin-right:auto;font-size:11px;color:#9ca3af">
+          ${escapeHTML(league.country || "")}
+        </span>
+      </div>
+    `;
+
+    const games = group.matches.map(match => {
+
+      const home = match.teams?.home || {};
+      const away = match.teams?.away || {};
+      const goals = match.goals || {};
+      const fixture = match.fixture || {};
+
+      const status = fixture.status?.short || "NS";
+
+      const started = !["NS", "TBD"].includes(status);
+
+      const score = started
+        ? `${goals.home ?? 0} - ${goals.away ?? 0}`
+        : "VS";
+
+      const clock = started
+        ? statusLabel(status)
+        : formatTime(fixture.date);
+
+      return `
+        <div class="match"
+          onclick="openMatch(${Number(fixture.id)})">
+
+          <div class="team home">
+            <img src="${escapeHTML(home.logo || "")}" alt=""
+              onerror="this.style.display='none'">
+
+            <span class="team-name">
+              ${escapeHTML(home.name || "الفريق الأول")}
+            </span>
+          </div>
+
+          <div class="center">
+            <div class="score">${score}</div>
+
+            <div class="time ${isLive(status) ? "live" : ""}">
+              ${escapeHTML(clock)}
+
+              ${isLive(status) && fixture.status?.elapsed != null
+                ? ` ${fixture.status.elapsed}'`
+                : ""}
+            </div>
+          </div>
+
+          <div class="team away">
+            <span class="team-name">
+              ${escapeHTML(away.name || "الفريق الثاني")}
+            </span>
+
+            <img src="${escapeHTML(away.logo || "")}" alt=""
+              onerror="this.style.display='none'">
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+    return `
+      <section class="league">
+        ${leagueHeader}
+        ${games}
+      </section>
+    `;
+
+  }).join("");
+
+}
+
+
+// ===============================
+// فتح تفاصيل المباراة
+// ===============================
+
+async function openMatch(id) {
+
+  if (!id) return;
+
+  selectedMatch = id;
+
+  document.getElementById("homePage").style.display = "none";
+  document.getElementById("detailsPage").style.display = "block";
+
+  document.getElementById("matchDetails").innerHTML = `
+    <div class="message">
+      جاري تحميل تفاصيل المباراة...
+    </div>
+  `;
+
+  window.scrollTo(0, 0);
+
+  const thisRequest = ++detailsRequestNumber;
+
+  try {
+
+    const url = new URL(API_URL);
+
+    url.searchParams.set("id", id);
+    url.searchParams.set("timezone", TIMEZONE);
+
+    const response = await fetch(url, {
+      headers: {
+        "x-apisports-key": API_KEY
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("HTTP " + response.status);
+    }
+
+    const data = await response.json();
+
+    if (data.errors && Object.keys(data.errors).length) {
+      throw new Error(JSON.stringify(data.errors));
+    }
+
+    if (thisRequest !== detailsRequestNumber) return;
+
+    const match = data.response?.[0];
+
+    if (!match) {
+      throw new Error("لم يتم العثور على المباراة");
+    }
+
+    renderDetails(match);
+
+  } catch (error) {
+
+    if (thisRequest !== detailsRequestNumber) return;
+
+    console.error(error);
+
+    document.getElementById("matchDetails").innerHTML = `
+      <div class="message">
+        تعذر تحميل تفاصيل المباراة.
+        <br><br>
+        ${escapeHTML(error.message)}
+      </div>
+    `;
+
+  }
+
+}
+
+
+// ===============================
+// عرض تفاصيل المباراة
+// ===============================
+
+function renderDetails(match) {
+
+  const home = match.teams?.home || {};
+  const away = match.teams?.away || {};
+
+  const goals = match.goals || {};
+  const fixture = match.fixture || {};
+  const league = match.league || {};
+
+  const status = fixture.status?.short || "NS";
+
+  const started = !["NS", "TBD"].includes(status);
+
+  const score = started
+    ? `${goals.home ?? 0} - ${goals.away ?? 0}`
+    : "VS";
+
+  const homeName = home.name || "الفريق الأول";
+  const awayName = away.name || "الفريق الثاني";
+
+  document.title =
+    homeName + " × " + awayName + " | NEON SPORT";
+
+  const elapsed = fixture.status?.elapsed;
+
+  document.getElementById("matchDetails").innerHTML = `
+
+    <div class="details-card">
+
+      <div class="league-info">
+        ${escapeHTML(league.name || "بطولة غير محددة")}
+        ${league.country
+          ? " - " + escapeHTML(league.country)
+          : ""}
+      </div>
+
+      <div class="teams-details">
+
+        <div class="team-details">
+          <img src="${escapeHTML(home.logo || "")}"
+            alt=""
+            onerror="this.style.visibility='hidden'">
+
+          <h3>${escapeHTML(homeName)}</h3>
+        </div>
+
+        <div>
+          <div class="details-score">${score}</div>
+
+          <div class="details-status">
+            ${escapeHTML(statusLabel(status))}
+          </div>
+
+          ${elapsed != null
+            ? `<div class="details-status">${elapsed}'</div>`
+            : ""}
+        </div>
+
+        <div class="team-details">
+          <img src="${escapeHTML(away.logo || "")}"
+            alt=""
+            onerror="this.style.visibility='hidden'">
+
+          <h3>${escapeHTML(awayName)}</h3>
+        </div>
+
+      </div>
+
+      <div class="details-date">
+        ${fixture.date ? formatTime(fixture.date) : ""}
+      </div>
+
+    </div>
+
+
+    <div class="details-card">
+
+      <div class="section-title">
+        معلومات المباراة
+      </div>
+
+      <div class="info-grid">
+
+        <div class="info-item">
+          <span>البطولة</span>
+          ${escapeHTML(league.name || "غير محدد")}
+        </div>
+
+        <div class="info-item">
+          <span>الدولة</span>
+          ${escapeHTML(league.country || "غير محددة")}
+        </div>
+
+        <div class="info-item">
+          <span>الملعب</span>
+          ${escapeHTML(fixture.venue?.name || "غير محدد")}
+        </div>
+
+        <div class="info-item">
+          <span>المدينة</span>
+          ${escapeHTML(fixture.venue?.city || "غير محددة")}
+        </div>
+
+        <div class="info-item">
+          <span>الحكم</span>
+          ${escapeHTML(fixture.referee || "غير محدد")}
+        </div>
+
+        <div class="info-item">
+          <span>حالة المباراة</span>
+          ${escapeHTML(statusLabel(status))}
+        </div>
+
+        <div class="info-item">
+          <span>الجولة</span>
+          ${escapeHTML(league.round || "غير محددة")}
+        </div>
+
+        <div class="info-item">
+          <span>رقم المباراة</span>
+          ${escapeHTML(fixture.id || "")}
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+// ===============================
+// الرجوع للقائمة
+// ===============================
+
+function goBack() {
+
+  detailsRequestNumber++;
+
+  document.getElementById("detailsPage").style.display = "none";
+  document.getElementById("homePage").style.display = "block";
+
+  document.title = "NEON SPORT";
+
+  window.scrollTo(0, 0);
+
+}
+
+
+// ===============================
+// التحديث التلقائي
+// ===============================
+
+loadMatches();
+
+refreshTimer = setInterval(() => {
+
+  // تحديث قائمة المباريات فقط إذا كانت ظاهرة
+  if (document.getElementById("homePage").style.display !== "none") {
+
+    const date = getSelectedDate();
+
+    delete matchesCache[date];
+
+    loadMatches(true);
+
+  }
+
+}, 60000);
+
+</script>
+
+</body>
+</html>
