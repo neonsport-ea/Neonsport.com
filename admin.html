@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEON SPORT ADMIN</title>
+<style>
+body {
+  background:#080b12;
+  color:white;
+  font-family:Arial,sans-serif;
+  padding:20px;
+}
+.box {
+  max-width:450px;
+  margin:50px auto;
+  background:#111827;
+  padding:25px;
+  border-radius:15px;
+}
+h2 {color:#ffd700;text-align:center}
+input,button {
+  width:100%;
+  padding:13px;
+  margin:10px 0;
+  border-radius:8px;
+  box-sizing:border-box;
+}
+input {background:#080b12;color:white;border:1px solid #444}
+button {background:#ffd700;border:0;font-weight:bold}
+#message {text-align:center;color:#ffd700}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>NEON SPORT ADMIN</h2>
+<p>لوحة تحكم الموقع</p>
+
+<input id="email" type="email" placeholder="البريد الإلكتروني">
+<input id="password" type="password" placeholder="كلمة المرور">
+
+<button id="login">تسجيل الدخول</button>
+<p id="message"></p>
+</div>
+
+<script type="module">
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+
+import {
+ getAuth,
+ signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
+
+const firebaseConfig = {
+ apiKey: "AIzaSyAb2Yaex3oRaZ11c4V9knZaPNzTZGkHGGo",
+ authDomain: "neon-sport-admin-ceo-fn.firebaseapp.com",
+ projectId: "neon-sport-admin-ceo-fn",
+ storageBucket: "neon-sport-admin-ceo-fn.firebasestorage.app",
+ messagingSenderId: "498381562171",
+ appId: "1:498381562171:web:645616fcbb5cd73821571e"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+document.getElementById("login").onclick = async () => {
+ const email = document.getElementById("email").value;
+ const password = document.getElementById("password").value;
+ const message = document.getElementById("message");
+
+ try {
+  await signInWithEmailAndPassword(auth,email,password);
+  message.textContent = "تم تسجيل الدخول بنجاح";
+ } catch(error) {
+  message.textContent = "خطأ في البريد أو كلمة المرور";
+ }
+};
+</script>
+
+</body>
+</html>
