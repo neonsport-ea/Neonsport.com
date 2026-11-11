@@ -1,84 +1,358 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>NEON SPORT ADMIN</title>
 <style>
-body {
-  background:#080b12;
-  color:white;
-  font-family:Arial,sans-serif;
-  padding:20px;
-}
-.box {
-  max-width:450px;
-  margin:50px auto;
-  background:#111827;
-  padding:25px;
-  border-radius:15px;
-}
-h2 {color:#ffd700;text-align:center}
-input,button {
-  width:100%;
-  padding:13px;
-  margin:10px 0;
-  border-radius:8px;
-  box-sizing:border-box;
-}
-input {background:#080b12;color:white;border:1px solid #444}
-button {background:#ffd700;border:0;font-weight:bold}
-#message {text-align:center;color:#ffd700}
+*{box-sizing:border-box}
+body{margin:0;background:#080b12;color:white;font-family:Arial,sans-serif;padding:18px}
+.box{max-width:850px;margin:25px auto;background:#111827;padding:20px;border-radius:15px}
+h2{color:#ffd700;text-align:center}
+input,button{width:100%;padding:12px;margin:7px 0;border-radius:8px;font-size:14px}
+input{background:#080b12;color:white;border:1px solid #444}
+button{background:#ffd700;border:0;font-weight:bold;cursor:pointer}
+.secondary{background:#273449;color:white}
+.match{padding:14px;margin:10px 0;background:#080b12;border:1px solid #333;border-radius:10px;cursor:pointer}
+.match:hover{border-color:#ffd700}
+.muted{color:#aaa;font-size:13px}
+#panel{display:none}
+#message{color:#ffd700;text-align:center;margin:12px}
+.selected{border-color:#ffd700}
 </style>
 </head>
 <body>
 
 <div class="box">
 <h2>NEON SPORT ADMIN</h2>
-<p>لوحة تحكم الموقع</p>
 
+<div id="loginBox">
 <input id="email" type="email" placeholder="البريد الإلكتروني">
 <input id="password" type="password" placeholder="كلمة المرور">
+<button id="loginBtn">تسجيل الدخول</button>
+</div>
 
-<button id="login">تسجيل الدخول</button>
-<p id="message"></p>
+<div id="panel">
+<p id="welcome" class="muted"></p>
+
+<button class="secondary" id="logoutBtn">تسجيل الخروج</button>
+
+<h3>مباريات اليوم</h3>
+<input type="date" id="matchDate">
+<input id="search" placeholder="ابحث عن فريق أو دوري">
+
+<button id="loadBtn">تحميل المباريات</button>
+
+<div id="matches"></div>
+
+<div id="editor" style="display:none">
+<hr>
+<h3>المباراة المختارة</h3>
+<div id="selectedInfo"></div>
+
+<input id="streamUrl" type="url"
+placeholder="ضع رابط البث هنا">
+
+<button id="saveBtn">حفظ رابط البث</button>
+<button class="secondary" id="deleteBtn">حذف رابط البث</button>
+</div>
+</div>
+
+<div id="message"></div>
 </div>
 
 <script type="module">
-import { initializeApp }
+
+import {initializeApp}
 from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
 
 import {
- getAuth,
- signInWithEmailAndPassword
+getAuth,
+signInWithEmailAndPassword,
+onAuthStateChanged,
+signOut
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 
+import {
+getFirestore,
+doc,
+getDoc,
+setDoc,
+deleteDoc,
+serverTimestamp
+} from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+
+// إعدادات Firebase
 const firebaseConfig = {
- apiKey: "AIzaSyAb2Yaex3oRaZ11c4V9knZaPNzTZGkHGGo",
- authDomain: "neon-sport-admin-ceo-fn.firebaseapp.com",
- projectId: "neon-sport-admin-ceo-fn",
- storageBucket: "neon-sport-admin-ceo-fn.firebasestorage.app",
- messagingSenderId: "498381562171",
- appId: "1:498381562171:web:645616fcbb5cd73821571e"
+apiKey: "AIzaSyAb2Yaex3oRaZ11c4V9knZaPNzTZGkHGGo",
+authDomain: "neon-sport-admin-ceo-fn.firebaseapp.com",
+projectId: "neon-sport-admin-ceo-fn",
+storageBucket: "neon-sport-admin-ceo-fn.firebasestorage.app",
+messagingSenderId: "498381562171",
+appId: "1:498381562171:web:645616fcbb5cd73821571e"
 };
+
+// ضع مفتاح API الجديد بعد تغييره
+const API_KEY = "506fdee87b93af87e717ad3e9e2ea2dd";
+
+// ضع UID الخاص بحساب الأدمن
+const ADMIN_UID = "wZA1Il6T8UMDk6etgrWiz3nzG3h2";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-document.getElementById("login").onclick = async () => {
- const email = document.getElementById("email").value;
- const password = document.getElementById("password").value;
- const message = document.getElementById("message");
+const API_URL = "https://v3.football.api-sports.io/fixtures";
+const COLLECTION = "Streamurl";
 
- try {
-  await signInWithEmailAndPassword(auth,email,password);
-  message.textContent = "تم تسجيل الدخول بنجاح";
- } catch(error) {
-  message.textContent = "خطأ في البريد أو كلمة المرور";
- }
+let allMatches = [];
+let selectedMatch = null;
+
+const $ = id => document.getElementById(id);
+
+function message(text){
+$("message").textContent = text;
+}
+
+function escapeHTML(value){
+return String(value ?? "").replace(/[&<>"']/g,c=>({
+"&":"&amp;","<":"&lt;",">":"&gt;",
+'"':"&quot;","'":"&#39;"
+})[c]);
+}
+
+// تسجيل الدخول
+$("loginBtn").onclick = async () => {
+try{
+message("جاري تسجيل الدخول...");
+
+await signInWithEmailAndPassword(
+auth,
+$("email").value.trim(),
+$("password").value
+);
+
+message("تم تسجيل الدخول");
+}catch(error){
+message("خطأ في تسجيل الدخول: "+error.message);
+}
 };
-</script>
 
+// التحقق من الأدمن
+onAuthStateChanged(auth, user => {
+
+if(!user){
+$("loginBox").style.display="block";
+$("panel").style.display="none";
+return;
+}
+
+if(user.uid !== ADMIN_UID){
+message("هذا الحساب ليس لديه صلاحية الأدمن");
+signOut(auth);
+return;
+}
+
+$("loginBox").style.display="none";
+$("panel").style.display="block";
+$("welcome").textContent="مرحباً بك في لوحة تحكم NEON SPORT";
+
+loadMatches();
+});
+
+// تسجيل الخروج
+$("logoutBtn").onclick = () => signOut(auth);
+
+// التاريخ
+function today(){
+const parts=new Intl.DateTimeFormat("en-CA",{
+timeZone:"Africa/Cairo",
+year:"numeric",month:"2-digit",day:"2-digit"
+}).formatToParts(new Date());
+
+const v={};
+parts.forEach(p=>v[p.type]=p.value);
+return `${v.year}-${v.month}-${v.day}`;
+}
+
+$("matchDate").value=today();
+
+// تحميل المباريات
+async function loadMatches(){
+
+if(!auth.currentUser || auth.currentUser.uid !== ADMIN_UID) return;
+
+message("جاري تحميل المباريات...");
+$("matches").innerHTML="";
+
+try{
+
+const url=new URL(API_URL);
+url.searchParams.set("date",$("matchDate").value);
+url.searchParams.set("timezone","Africa/Cairo");
+
+const response=await fetch(url,{
+headers:{"x-apisports-key":API_KEY}
+});
+
+if(!response.ok) throw new Error("API HTTP "+response.status);
+
+const data=await response.json();
+
+if(data.errors && Object.keys(data.errors).length){
+throw new Error(JSON.stringify(data.errors));
+}
+
+allMatches=data.response || [];
+
+renderMatches();
+message("تم تحميل "+allMatches.length+" مباراة");
+
+}catch(error){
+message("تعذر تحميل المباريات: "+error.message);
+}
+}
+
+$("loadBtn").onclick=loadMatches;
+
+// البحث
+$("search").oninput=renderMatches;
+
+function renderMatches(){
+
+const search=$("search").value.trim().toLowerCase();
+
+const filtered=allMatches.filter(m=>{
+const home=m.teams?.home?.name || "";
+const away=m.teams?.away?.name || "";
+const league=m.league?.name || "";
+
+return (home+" "+away+" "+league).toLowerCase().includes(search);
+});
+
+if(!filtered.length){
+$("matches").innerHTML="<p class='muted'>لا توجد مباريات مطابقة</p>";
+return;
+}
+
+$("matches").innerHTML=filtered.map(m=>{
+
+const id=Number(m.fixture?.id);
+
+return `
+<div class="match" onclick="selectGame(${id})">
+<strong>${escapeHTML(m.teams?.home?.name)}</strong>
+<span> × </span>
+<strong>${escapeHTML(m.teams?.away?.name)}</strong>
+<p class="muted">
+${escapeHTML(m.league?.name)}
+-
+${escapeHTML(m.league?.country)}
+</p>
+<p class="muted">${escapeHTML(m.fixture?.date)}</p>
+</div>
+`;
+
+}).join("");
+
+}
+
+// اختيار مباراة
+window.selectGame=async id=>{
+
+selectedMatch=allMatches.find(m=>Number(m.fixture?.id)===id);
+
+if(!selectedMatch) return;
+
+const home=selectedMatch.teams?.home?.name || "";
+const away=selectedMatch.teams?.away?.name || "";
+
+$("selectedInfo").innerHTML=`
+<p>${escapeHTML(home)} × ${escapeHTML(away)}</p>
+<p class="muted">${escapeHTML(selectedMatch.league?.name)}</p>
+<p class="muted">رقم المباراة: ${id}</p>
+`;
+
+$("streamUrl").value="";
+$("editor").style.display="block";
+
+try{
+
+const ref=doc(db,COLLECTION,String(id));
+const saved=await getDoc(ref);
+
+if(saved.exists()){
+$("streamUrl").value=saved.data().streamUrl || "";
+message("تم العثور على رابط محفوظ للمباراة");
+}else{
+message("مباراة جديدة، أضف رابط البث");
+}
+
+}catch(error){
+message("خطأ في قراءة Firestore: "+error.message);
+}
+
+};
+
+// حفظ رابط البث
+$("saveBtn").onclick=async()=>{
+
+if(!selectedMatch) return;
+
+const url=$("streamUrl").value.trim();
+
+if(!url){
+message("اكتب رابط البث أولاً");
+return;
+}
+
+try{
+
+const id=String(selectedMatch.fixture.id);
+
+await setDoc(doc(db,COLLECTION,id),{
+fixtureId:Number(id),
+home:selectedMatch.teams?.home?.name || "",
+away:selectedMatch.teams?.away?.name || "",
+league:selectedMatch.league?.name || "",
+country:selectedMatch.league?.country || "",
+date:selectedMatch.fixture?.date || "",
+streamUrl:url,
+updatedAt:serverTimestamp()
+},{merge:true});
+
+message("تم حفظ رابط البث بنجاح");
+
+}catch(error){
+message("تعذر الحفظ: "+error.message);
+}
+
+};
+
+// حذف رابط البث
+$("deleteBtn").onclick=async()=>{
+
+if(!selectedMatch) return;
+
+if(!confirm("هل تريد حذف رابط البث؟")) return;
+
+try{
+
+await deleteDoc(doc(
+db,
+COLLECTION,
+String(selectedMatch.fixture.id)
+));
+
+$("streamUrl").value="";
+message("تم حذف رابط البث");
+
+}catch(error){
+message("تعذر الحذف: "+error.message);
+}
+
+};
+
+</script>
 </body>
 </html>
